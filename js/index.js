@@ -3,6 +3,7 @@ var map = new maplibregl.Map({
     style: 'https://gsi-cyberjapan.github.io/gsivectortile-mapbox-gl-js/std.json',
     center: [139.6831213, 35.6602488],
     zoom: 10,
+    maxZoom: 17.99,
     hash: true
 });
 
@@ -51,4 +52,16 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
   // ウィンドウサイズが変更されたときにも中央に配置を更新
   window.addEventListener('resize', function () {
     centerSvg();
+  });
+
+// 中心の座標情報を表示する
+function updateCoordinates() {
+    var center = map.getCenter();
+    document.getElementById('coordinates').innerHTML = center.lng.toFixed(5) + ', ' + center.lat.toFixed(5);
+  }
+  map.on('load', function() {
+    updateCoordinates();
+  });
+  map.on('move', function() {
+    updateCoordinates();
   });
