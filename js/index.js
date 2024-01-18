@@ -1,6 +1,7 @@
+document.addEventListener('DOMContentLoaded', function(){
 var map = new maplibregl.Map({
     container: 'map',
-    style: 'https://gsi-cyberjapan.github.io/gsivectortile-mapbox-gl-js/std.json',
+     style: 'https://gsi-cyberjapan.github.io/gsivectortile-mapbox-gl-js/std.json',
     center: [139.6831213, 35.6602488],
     zoom: 10,
     maxZoom: 17.99,
@@ -17,14 +18,13 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
     loadAndCenterSvg();
   });
   
-  
   // SVGを読み込んで中央に配置する関数
   function loadAndCenterSvg() {
     // SVG ファイルのパスを指定
-    var svgFilePath = 'media/MapCenterCoordIcon1.svg';
+    var CenterIconFilePath = 'media/MapCenterCoordIcon1.svg';
   
     // SVG ファイルを取得
-    fetch(svgFilePath)
+    fetch(CenterIconFilePath)
       .then(response => response.text())
       .then(svgData => {
         // SVG ファイルを #centercross-container に挿入
@@ -48,20 +48,32 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
     svgContainer.style.marginTop = -svgHeight / 2 + 'px';
   }
 
-
   // ウィンドウサイズが変更されたときにも中央に配置を更新
   window.addEventListener('resize', function () {
     centerSvg();
   });
 
-// 中心の座標情報を表示する
-function updateCoordinates() {
-    var center = map.getCenter();
-    document.getElementById('coordinates').innerHTML = center.lng.toFixed(5) + ', ' + center.lat.toFixed(5);
-  }
-  map.on('load', function() {
-    updateCoordinates();
-  });
-  map.on('move', function() {
-    updateCoordinates();
-  });
+
+
+ // クリックした点の座標情報を表示し、マーカーを表示する
+ var marker = null;
+ map.on('click', function(event) {
+  var clickedPoint = event.lngLat;
+  var olc = OpenLocationCode.encode(clickedPoint.lat, clickedPoint.lng);
+  var coordinatesHTML = `${clickedPoint.lng.toFixed(6)}, ${clickedPoint.lat.toFixed(6)}` + '<br>' + `Plus Code: ${olc}`;
+
+   // 既存のマーカーがあれば削除
+   if (marker !== null) {
+    marker.remove();
+}
+
+  marker = new maplibregl.Marker()
+       .setLngLat(clickedPoint)
+       .addTo(map);
+
+  new maplibregl.Popup()
+      .setLngLat(clickedPoint)
+      .setHTML(coordinatesHTML)
+      .addTo(map);
+});
+});
