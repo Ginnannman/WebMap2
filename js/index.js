@@ -8,6 +8,9 @@ var map = new maplibregl.Map({
     hash: true
 });
 
+// basemap
+
+
 // コントロール
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
 map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
@@ -23,14 +26,14 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
     // SVG ファイルのパスを指定
     var CenterIconFilePath = 'media/MapCenterCoordIcon1.svg';
   
-    // SVG ファイルを取得
+    // SVGファイルを取得
     fetch(CenterIconFilePath)
       .then(response => response.text())
       .then(svgData => {
-        // SVG ファイルを #centercross-container に挿入
+        // SVGファイルを #centercross-container に挿入
         document.getElementById('centercross-container').innerHTML = svgData;
   
-        // SVG を中央に配置
+        // SVGを中央に配置
         centerSvg();
       })
       .catch(error => console.error('Error loading SVG:', error));
@@ -56,24 +59,24 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
 
 
  // クリックした点の座標情報を表示し、マーカーを表示する
- var marker = null;
- map.on('click', function(event) {
-  var clickedPoint = event.lngLat;
-  var olc = OpenLocationCode.encode(clickedPoint.lat, clickedPoint.lng);
-  var coordinatesHTML = `${clickedPoint.lng.toFixed(6)}, ${clickedPoint.lat.toFixed(6)}` + '<br>' + `Plus Code: ${olc}`;
+  var marker = null;
+  map.on('click', function(event) {
+    var clickedPoint = event.lngLat;
+    var olc = OpenLocationCode.encode(clickedPoint.lat, clickedPoint.lng);
+   var coordinatesHTML = `<div style="font-size: 1.5em; text-align: center;">${clickedPoint.lat.toFixed(6)}, ${clickedPoint.lng.toFixed(6)}` + '<br>' + `${olc}</div>`;
 
    // 既存のマーカーがあれば削除
-   if (marker !== null) {
-    marker.remove();
-}
+    if (marker !== null) {
+     marker.remove();
+    }
 
   marker = new maplibregl.Marker()
-       .setLngLat(clickedPoint)
-       .addTo(map);
+   .setLngLat(clickedPoint)
+   .addTo(map);
 
   new maplibregl.Popup()
-      .setLngLat(clickedPoint)
-      .setHTML(coordinatesHTML)
-      .addTo(map);
-});
+    .setLngLat(clickedPoint)
+    .setHTML(coordinatesHTML)
+    .addTo(map);
+  });
 });
