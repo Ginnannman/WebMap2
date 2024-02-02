@@ -2,18 +2,45 @@ document.addEventListener('DOMContentLoaded', function(){
 var map = new maplibregl.Map({
     container: 'map',
      style: 'https://gsi-cyberjapan.github.io/gsivectortile-mapbox-gl-js/std.json',
-    center: [139.6831213, 35.6602488],
+    center: [139.683128, 35.660226],
     zoom: 10,
     maxZoom: 17.99,
-    hash: true
+    hash: true,
+    attributionControl: false
 });
 
 // basemap
 
 
+// 十字ファイルのパスを指定
+var CenterIconFilePath = 'media/MapCenterCoordIcon1.svg';
+
 // コントロール
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
 map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
+map.addControl(new maplibregl.AttributionControl(), 'bottom-right');
+
+ // Custom control
+ var customControlContainer = document.createElement('div');
+ customControlContainer.className = 'custom-control-container';
+ customControlContainer.innerHTML = '<button id="centerIcon"><img src=" '+CenterIconFilePath+'" alt="center cross"></button>';
+
+ // Add the custom control to the map
+ map.getContainer().appendChild(customControlContainer);
+
+ // Toggle SVG visibility function
+ function toggleSvgVisibility() {
+   var svgContainer = document.getElementById('centercross-container');
+   if (svgContainer) {
+     svgContainer.style.display = svgContainer.style.display === 'none' ? 'block' : 'none';
+   }
+ }
+
+ // Attach click event to the custom button
+ var toggleButton = document.getElementById('centerIcon');
+ toggleButton.addEventListener('click', function () {
+   toggleSvgVisibility();
+ });
 
 
   // 中心に十字を表示する
@@ -23,8 +50,6 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
   
   // SVGを読み込んで中央に配置する関数
   function loadAndCenterSvg() {
-    // SVG ファイルのパスを指定
-    var CenterIconFilePath = 'media/MapCenterCoordIcon1.svg';
   
     // SVGファイルを取得
     fetch(CenterIconFilePath)
@@ -42,6 +67,7 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
   // SVGを中央に配置する関数
   function centerSvg() {
     var svgContainer = document.getElementById('centercross-container');
+    var centerIcon = document.getElementById('centerIcon');
   
     var svgWidth = svgContainer.offsetWidth;
     var svgHeight = svgContainer.offsetHeight;
@@ -49,6 +75,8 @@ map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
     // 中央に配置
     svgContainer.style.marginLeft = -svgWidth / 2 + 'px';
     svgContainer.style.marginTop = -svgHeight / 2 + 'px';
+    svgContainer.style.pointerEvents = 'none';
+    svgContainer.style.zIndex = '1';
   }
 
   // ウィンドウサイズが変更されたときにも中央に配置を更新
